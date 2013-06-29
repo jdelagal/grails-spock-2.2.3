@@ -65,27 +65,6 @@ class UserControllerSpec extends  Specification {
         val3 == "Object: methodWithArguments(String)"
     }
 
-    // DOES NOT Work.
-    // the following fails, can't seem to mock with ">>"
-    def 'mock a method on Domain collaborator using >>'() {
-        given: 'user'
-        User user = new User(name:'anotherTest',password:'1234').save(flush:true)
-
-        user.methodWithNoArguments()  >> { "Mock: (2) methodWithNoArguments" }
-        user.methodWithArguments(_,_) >> { "Mock: (2) methodWithArguments(String,Integer)" }
-        user.methodWithArguments(_)   >> { "Mock: (2) methodWithArguments(String)" }
-
-        when: 'we call the method'
-        def val1 = user.methodWithNoArguments()
-        def val2 = user.methodWithArguments("x",1)
-        def val3 = user.methodWithArguments("x")
-
-        then: 'value should be from the mocked method'
-        val1 == "Mock: (2) methodWithNoArguments"
-        val2 == "Mock: (2) methodWithArguments(String,Integer)"
-        val3 == "Mock: (2) methodWithArguments(String)"
-    }
-
     // DOES NOT work in 2.2.3,
     // WORKS in grails-2.0.0
     def 'create a Domain collaborator using Mock'() {
