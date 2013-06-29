@@ -4,6 +4,8 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class UserController {
 
+    def userService
+
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def index() {
@@ -21,19 +23,19 @@ class UserController {
 
     def save() {
         def userInstance = new User(params)
-        if (!userInstance.save(flush: true)) {
+        if (!userService.createUser(userInstance)) {
             render(view: "create", model: [userInstance: userInstance])
             return
         }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
+        flashMessage('default.created.message', ['User', userInstance.id])
         redirect(action: "show", id: userInstance.id)
     }
 
     def show(Long id) {
         def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            flashMessage('default.not.found.message', ['User', id])
             redirect(action: "list")
             return
         }
@@ -44,7 +46,7 @@ class UserController {
     def edit(Long id) {
         def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            flashMessage('default.not.found.message', ['User', id])
             redirect(action: "list")
             return
         }
@@ -55,7 +57,7 @@ class UserController {
     def update(Long id, Long version) {
         def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            flashMessage('default.not.found.message',['User', id])
             redirect(action: "list")
             return
         }
@@ -63,7 +65,7 @@ class UserController {
         if (version != null) {
             if (userInstance.version > version) {
                 userInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                          [message(code: 'user.label', default: 'User')] as Object[],
+                          ['User'] as Object[],
                           "Another user has updated this User while you were editing")
                 render(view: "edit", model: [userInstance: userInstance])
                 return
@@ -77,26 +79,30 @@ class UserController {
             return
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
+        flashMessage('default.updated.message', ['User', userInstance.id])
         redirect(action: "show", id: userInstance.id)
     }
 
     def delete(Long id) {
         def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            flashMessage('default.not.found.message', ['User', id])
             redirect(action: "list")
             return
         }
 
         try {
             userInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User'), id])
+            flashMessage('default.deleted.message', ['User', id])
             redirect(action: "list")
         }
         catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User'), id])
+            flashMessage('default.not.deleted.message'['User', id])
             redirect(action: "show", id: id)
         }
+    }
+
+    private flashMessage(code, args) {
+        flash.message=message(code:code,args:args)
     }
 }

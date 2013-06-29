@@ -5,51 +5,125 @@ import grails.test.mixin.TestFor
 import grails.test.mixin.Mock
 import grails.test.GrailsMock
 
-/**
- * Created with IntelliJ IDEA.
- * User: raghuramn
- * Date: 6/28/13
- * Time: 6:48 PM
- * To change this template use File | Settings | File Templates.
- */
-@TestFor(UserController)
-@Mock([User])
-class UserControllerSpec extends  Specification{
+@TestFor(UserController)  // testing for
+@Mock([User])             // collaborators
+class UserControllerSpec extends  Specification {
 
-    def user = new User()
-
-
+    // def user = new User(name:'global',passwordl:'1234')
+    def service = new UserService()
 
     def setup(){
-
-        user.id = 1
-        user.name = "test"
-        user.password = "1234"
-        user.save(flush: true)
-
     }
 
-    void 'show action '() {
+    def 'show action '() {
         given: 'user'
+
+        User user = new User(name:'test',password:'1234').save(flush:true)
+
         when: 'we hit the show action'
-        def model = controller.show(new Long(1))
+        def model = controller.show(user.id)
 
         then: 'user is saved'
-        model.userInstance.id == 1
+        model.userInstance.id == user.id
     }
 
 
-    void 'show action with error'() {
+    // Works
+    def 'mock a method on collaborator using metaClass'() {
         given: 'user'
-        user.id = 2
-        user.name = 'TestTwo'
-        user.save(flush: true)
-        when: 'we hit the show action'
-        def model = controller.show(new Long(2))
 
+        User user = new User(name:'anotherTest',password:'1234').save(flush:true)
 
-        then: 'user is saved'
-        model.userInstance.id == 2
-        model.userInstance.name == 'TestTwo'
+        User.metaClass.methodWithNoArguments = { "Mock: (1) methodWithNoArguments" }
+        User.metaClass.methodWithArguments   = { String x, Integer y -> "Mock: (1) methodWithArguments(String,Integer)" }
+        User.metaClass.methodWithArguments   = { String x -> "Mock: (1) methodWithArguments(String)" }
+
+        when: 'we call the methods'
+        def val1 = user.methodWithNoArguments()
+        def val2 = user.methodWithArguments("x",1)
+        def val3 = user.methodWithArguments("x")
+
+        then: 'mocked methods should be used.'
+        val1 == "Mock: (1) methodWithNoArguments"
+        val2 == "Mock: (1) methodWithArguments(String,Integer)"
+        val3 == "Mock: (1) methodWithArguments(String)"
     }
+
+    // Works
+    def 'using a collaborator without mocking'() {
+        given:'user'
+        User user = new User(name:'anotherTest',password:'1234').save(flush:true)
+
+        when: 'we call the methods'
+        def val1 = user.methodWithNoArguments()
+        def val2 = user.methodWithArguments("x",1)
+        def val3 = user.methodWithArguments("x")
+
+        then: 'mocked methods should be used.'
+        val1 == "Object: methodWithNoArguments"
+        val2 == "Object: methodWithArguments(String,Integer)"
+        val3 == "Object: methodWithArguments(String)"
+    }
+
+    // DOES NOT Work.
+    // the following fails, can't seem to mock with ">>"
+    def 'mock a method on Domain collaborator using >>'() {
+        given: 'user'
+        User user = new User(name:'anotherTest',password:'1234').save(flush:true)
+
+        user.methodWithNoArguments()  >> { "Mock: (2) methodWithNoArguments" }
+        user.methodWithArguments(_,_) >> { "Mock: (2) methodWithArguments(String,Integer)" }
+        user.methodWithArguments(_)   >> { "Mock: (2) methodWithArguments(String)" }
+
+        when: 'we call the method'
+        def val1 = user.methodWithNoArguments()
+        def val2 = user.methodWithArguments("x",1)
+        def val3 = user.methodWithArguments("x")
+
+        then: 'value should be from the mocked method'
+        val1 == "Mock: (2) methodWithNoArguments"
+        val2 == "Mock: (2) methodWithArguments(String,Integer)"
+        val3 == "Mock: (2) methodWithArguments(String)"
+    }
+
+    // DOES NOT work in 2.2.3,
+    // WORKS in grails-2.0.0
+    def 'create a Domain collaborator using Mock'() {
+        given: 'user'
+        // can't mock this anymore, causes classcast exception.
+        User user = Mock(User)
+
+        user.methodWithNoArguments()  >> { "Mock: (3) methodWithNoArguments" }
+        user.methodWithArguments(_,_) >> { "Mock: (3) methodWithArguments(String,Integer)" }
+        user.methodWithArguments(_)   >> { "Mock: (3) methodWithArguments(String)" }
+
+        when: 'we call the method'
+        def val1 = user.methodWithNoArguments()
+        def val2 = user.methodWithArguments("x",1)
+        def val3 = user.methodWithArguments("x")
+
+        then: 'value should be from the mocked method'
+        val1 == "Mock: (3) methodWithNoArguments"
+        val2 == "Mock: (3) methodWithArguments(String,Integer)"
+        val3 == "Mock: (3) methodWithArguments(String)"
+    }
+
+    // WORKS
+    def 'create Service collaborator using Mock'() {
+        given:'mocked service'
+
+        service = Mock(UserService)
+        service.createUser(_) >> { null }
+
+        controller.userService = service
+
+        when:
+        controller.save()
+
+        then:
+        // verify that mocked method is called.
+        1 * service.createUser(_)
+        view == '/user/create'
+    }
+
 }
