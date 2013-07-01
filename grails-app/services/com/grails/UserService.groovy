@@ -7,6 +7,6 @@ class UserService {
     }
 
     def deleteUser( User user ) {
-
+        user.delete()
     }
 }
