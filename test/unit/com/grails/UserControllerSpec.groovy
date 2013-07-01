@@ -91,6 +91,7 @@ class UserControllerSpec extends  Specification {
     def 'create Service collaborator using Mock'() {
         given:'mocked service'
 
+        // Mocking service.
         service = Mock(UserService)
         service.createUser(_) >> { null }
 
