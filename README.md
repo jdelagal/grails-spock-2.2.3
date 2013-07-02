@@ -25,8 +25,6 @@
 + grails clean;
 </code> </pre>
 
-### Unit Specs ###
-
 <pre><code>
 // works in isolation
 + grails test-app --echoOut UserControllerSpockMockSpec; 
@@ -36,16 +34,13 @@
 + grails test-app --echoOut UserControllerSpec UserControllerSpockMockSpec;  
 </code></pre>
 
-
-### Integration Specs ###
-
-> Spock Mock Integration tests seem to fail in isolation also. see UserServiceIntegrationSpockMockSpec
+> for integration specs the spock Mock tests seem to fail in isolation also..
 
 <pre><code>
-// fail
-+ grails test-app --echoOut UserServiceIntegrationSpec;  // One of the test case fails
-// fail
-+ grails test-app --echoOut UserServiceIntegrationSpockMockSpec // Still fails, in Unit tests it seems to work in isolation
+// fails
++ grails test-app --echoOut UserServiceIntegrationSpec;  
+// fails
++ grails test-app --echoOut UserServiceIntegrationSpockMockSpec 
 </code></pre>
 
 
