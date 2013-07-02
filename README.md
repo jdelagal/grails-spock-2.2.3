@@ -3,12 +3,15 @@
 
 All the test cases pass using grails 2.0.0
 
+
+<pre><code>
 + git checkout grails-2.0.0;
 + export GRAILS_HOME=...;
 + export PATH=$GRAILS_HOME/bin:$PATH
-
 + grails clean;
 + grails test-app --echoOut UserControllerSpec UserControllerSpockMockSpec UserServiceIntegrationSpec UserServiceIntegrationSpockMockSpec; // all pass
+</code>
+</pre>
 
 
 ## with grails 2.2.3 ##
@@ -18,7 +21,6 @@ All the test cases pass using grails 2.0.0
 + git checkout master;
 + export GRAILS_HOME=...
 + export PATH=$GRAILS_HOME/bin:$PATH
-
 + grails clean;
 
 ### Unit Specs ###
