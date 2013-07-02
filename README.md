@@ -2,7 +2,7 @@
 ## with grails 2.2.3 ##
 
 + git checkout master;
-+ export GRAILS_HOME=<grails-2.2.3-home>
++ export GRAILS_HOME={grails-2.2.3-home}
 + export PATH=$GRAILS_HOME/bin:$PATH
 
 + grails clean;
@@ -39,7 +39,7 @@
 ## with grails 2.0.0 #
 
 + git checkout grails-2.0.0;
-+ export GRAILS_HOME=<grails-2.0.0-home>
++ export GRAILS_HOME={grails-2.0.0-home}
 + export PATH=$GRAILS_HOME/bin:$PATH
 
 + grails clean;
