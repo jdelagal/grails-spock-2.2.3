@@ -2,24 +2,12 @@ package com.grails
 
 import grails.plugin.spock.IntegrationSpec
 
-
-class UserServiceIntegrationSpec extends IntegrationSpec {
+class UserServiceIntegrationSpockMockSpec extends IntegrationSpec {
 
     def userService
 
     def setup() {
 
-    }
-
-    def 'create User Domain'() {
-        given:
-        User user = new User(name: 'abc',password: 'xyz')
-
-        when:
-        userService.createUser(user)
-
-        then:
-        User.findAll().size() == 1
     }
 
     // DOES NOT work in 2.2.3 spock 0.7,
