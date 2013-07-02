@@ -16,7 +16,7 @@
 
 ## with grails 2.2.3 ##
 
-> The spock unit mock tests seem to work in isolation, but if combined with any other test cases that use Grails Mock they seem to fail. i.e if I run UserControllerSpockMockSpec in isolation it worksbut if run together with "UserControllerSpec UserControllerSpockMockSpec" it will cause failure.. 
+> The spock unit mock tests seem to work in isolation, but if combined with any other test cases that use Grails Mock they seem to fail. i.e if I run UserControllerSpockMockSpec in isolation it works but if run together with "UserControllerSpec UserControllerSpockMockSpec" it will cause failure.. 
 
 <pre><code>
 + git checkout master;
@@ -30,7 +30,7 @@
 + grails test-app --echoOut UserControllerSpockMockSpec; 
 // one test case fails 
 + grails test-app --echoOut UserControllerSpec;  
-// failures in both specs
+// failures in both specs, but UserControllerSpockMockSpec worked in isolation
 + grails test-app --echoOut UserControllerSpec UserControllerSpockMockSpec;  
 </code></pre>
 
